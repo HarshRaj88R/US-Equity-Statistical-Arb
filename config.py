@@ -72,6 +72,14 @@ CANDIDATE_PAIRS = [
     ('T',    'VZ'),    # Telecom duopoly
     ('NEE',  'DUK'),   # Utilities
     ('BRK-B','SPY'),   # Berkshire vs S&P 500
+
+    # --- Semiconductor capital equipment (high cointegration) ---
+    ('LRCX', 'KLAC'),  # Lam Research vs KLA Corp
+    ('LRCX', 'AMAT'),  # Lam Research vs Applied Materials
+    ('KLAC', 'AMAT'),  # KLA Corp vs Applied Materials
+    ('AMAT', 'ASML'),  # Applied Materials vs ASML
+    ('LRCX', 'ASML'),  # Lam Research vs ASML
+    ('KLAC', 'ASML'),  # KLA Corp vs ASML
 ]
 
 # ─── Data window ─────────────────────────────────────────────────────────────

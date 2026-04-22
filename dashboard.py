@@ -117,8 +117,9 @@ def plot_prices(data: pd.DataFrame, ty: str, tx: str,
                              showlegend=False), row=2, col=1)
 
     if split_date:
+        sd = str(split_date)[:10]   # "YYYY-MM-DD" — Plotly needs a string on Cloud
         for row in [1, 2]:
-            fig.add_vline(x=split_date, line_dash='dash',
+            fig.add_vline(x=sd, line_dash='dash',
                           line_color='rgba(255,255,255,0.4)',
                           annotation_text="Train | Test split",
                           annotation_position="top left", row=row, col=1)
@@ -149,7 +150,7 @@ def plot_spread(df: pd.DataFrame, period: str, split_date=None) -> go.Figure:
                              name='Lower Exit',
                              line=dict(color='rgba(0,200,130,0.6)', width=1, dash='dot')))
 
-    # Shade position periods
+    # Shade position periods — convert Timestamps to strings for Plotly Cloud
     pos = df['positions']
     long_mask  = pos > 0
     short_mask = pos < 0
@@ -164,14 +165,16 @@ def plot_spread(df: pd.DataFrame, period: str, split_date=None) -> go.Figure:
                 start_i  = ts
             elif not flag and in_trade:
                 in_trade = False
-                fig.add_vrect(x0=start_i, x1=ts, fillcolor=clr,
-                              line_width=0, annotation_text=lbl if i < 10 else '')
-        if in_trade:
-            fig.add_vrect(x0=start_i, x1=mask.index[-1],
+                if start_i != ts:   # guard against zero-width rect
+                    fig.add_vrect(x0=str(start_i)[:10], x1=str(ts)[:10],
+                                  fillcolor=clr, line_width=0,
+                                  annotation_text=lbl if i < 10 else '')
+        if in_trade and start_i is not None and start_i != mask.index[-1]:
+            fig.add_vrect(x0=str(start_i)[:10], x1=str(mask.index[-1])[:10],
                           fillcolor=clr, line_width=0)
 
     if split_date:
-        fig.add_vline(x=split_date, line_dash='dash',
+        fig.add_vline(x=str(split_date)[:10], line_dash='dash',
                       line_color='rgba(255,255,255,0.4)')
 
     fig.update_layout(title=f"Spread + Bollinger Bands ({period})",
