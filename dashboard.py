@@ -341,14 +341,14 @@ def main() -> None:
                 col.markdown(metric_html(lbl, val, unit, gp), unsafe_allow_html=True)
 
         st.plotly_chart(plot_prices(data, ticker_y, ticker_x, split_date),
-                        use_container_width=True)
+                        use_container_width=True, key="ov_prices")
 
         if daily_res:
             df_tr = daily_res['train']['df']
             df_te = daily_res['test']['df']
             full_df = pd.concat([df_tr, df_te])
             st.plotly_chart(plot_spread(full_df, 'Daily', split_date),
-                            use_container_width=True)
+                            use_container_width=True, key="ov_spread")
 
     # ── Tab 2: Cointegration ──────────────────────────────────────────────────
     with tab_coint:
@@ -400,7 +400,7 @@ The **Augmented Dickey-Fuller (ADF)** test checks whether the spread is *station
                 st.markdown("**Spread chart:**")
                 spread_df = pd.concat([res['train']['df'], res['test']['df']])
                 st.plotly_chart(plot_spread(spread_df, tf_label, res['split_date']),
-                                use_container_width=True)
+                                use_container_width=True, key=f"coint_spread_{tf_label}")
 
     # ── Tab 3: Backtest ───────────────────────────────────────────────────────
     with tab_bt:
@@ -419,12 +419,13 @@ The **Augmented Dickey-Fuller (ADF)** test checks whether the spread is *station
             # Equity curve
             st.plotly_chart(plot_equity(res['train']['df'],
                                         res['test']['df'], tf_sel),
+                            key=f"bt_equity_{tf_sel}",
                             use_container_width=True)
 
             # Spread chart (train period only)
             st.plotly_chart(plot_spread(res['train']['df'],
                                         f"{tf_sel} — Backtest", None),
-                            use_container_width=True)
+                            use_container_width=True, key=f"bt_spread_{tf_sel}")
 
             # Metrics table
             st.subheader("Backtest Metrics")
@@ -478,12 +479,12 @@ The **Augmented Dickey-Fuller (ADF)** test checks whether the spread is *station
             dummy_train['cumulative_returns'] = 1.0  # flat baseline for stitching
             st.plotly_chart(plot_equity(res_ft['train']['df'],
                                         res_ft['test']['df'], tf_sel_ft),
-                            use_container_width=True)
+                            use_container_width=True, key=f"ft_equity_{tf_sel_ft}")
 
             # Spread chart (test period)
             st.plotly_chart(plot_spread(res_ft['test']['df'],
                                         f"{tf_sel_ft} — Forward Test", None),
-                            use_container_width=True)
+                            use_container_width=True, key=f"ft_spread_{tf_sel_ft}")
 
             # Metrics
             st.subheader("Forward Test Metrics")
