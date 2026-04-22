@@ -117,12 +117,19 @@ def plot_prices(data: pd.DataFrame, ty: str, tx: str,
                              showlegend=False), row=2, col=1)
 
     if split_date:
-        sd = str(split_date)[:10]   # "YYYY-MM-DD" — Plotly needs a string on Cloud
+        sd = str(split_date)[:10]
+        # add_vline with annotation + row= crashes on Plotly >= 5.20 subplots;
+        # add_shape is the reliable alternative for per-row vertical lines.
         for row in [1, 2]:
-            fig.add_vline(x=sd, line_dash='dash',
-                          line_color='rgba(255,255,255,0.4)',
-                          annotation_text="Train | Test split",
-                          annotation_position="top left", row=row, col=1)
+            fig.add_shape(type='line', x0=sd, x1=sd, y0=0, y1=1,
+                          xref='x', yref='paper',
+                          line=dict(dash='dash', color='rgba(255,255,255,0.4)'),
+                          row=row, col=1)
+        # single annotation on row-1 only (annotations don't need row/col)
+        fig.add_annotation(x=sd, y=1, xref='x', yref='paper',
+                           text='Train | Test', showarrow=False,
+                           font=dict(color='rgba(255,255,255,0.5)', size=10),
+                           xanchor='left', yanchor='top')
 
     fig.update_layout(height=450, template='plotly_dark', margin=dict(t=40, b=20))
     return fig
@@ -174,8 +181,9 @@ def plot_spread(df: pd.DataFrame, period: str, split_date=None) -> go.Figure:
                           fillcolor=clr, line_width=0)
 
     if split_date:
-        fig.add_vline(x=str(split_date)[:10], line_dash='dash',
-                      line_color='rgba(255,255,255,0.4)')
+        fig.add_shape(type='line', x0=str(split_date)[:10], x1=str(split_date)[:10],
+                      y0=0, y1=1, xref='x', yref='paper',
+                      line=dict(dash='dash', color='rgba(255,255,255,0.4)'))
 
     fig.update_layout(title=f"Spread + Bollinger Bands ({period})",
                       height=400, template='plotly_dark',
