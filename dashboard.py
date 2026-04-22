@@ -241,7 +241,7 @@ def main() -> None:
         start_date  = st.text_input("Start Date", START_DATE)
         end_date    = st.text_input("End Date",   END_DATE)
         significance = st.selectbox("ADF Significance", [0.01, 0.05, 0.10],
-                                    index=1)
+                                    index=2)   # default 10%
 
         st.markdown("---")
         st.subheader("Strategy Parameters")
